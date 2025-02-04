@@ -1,7 +1,8 @@
 using System;
-using CatCore;
-using CatCore.Models.Twitch.IRC;
-using CatCore.Services.Twitch.Interfaces;
+using ChatCore;
+using ChatCore.Models.Twitch;
+using ChatCore.Services.Twitch;
+using ChatCore.Interfaces;
 using SiraUtil.Logging;
 using Zenject;
 
@@ -11,17 +12,20 @@ namespace Link
     {
         private readonly SiraLog _siraLog;
         private readonly ISongLinkManager _songLinkManager;
-        private readonly CatCoreInstance _chatCoreInstance;
+        private readonly ChatCoreInstance _chatCoreInstance;
         private readonly IBeatmapStateManager _beatmapStateManager;
 
-        private ITwitchService? _chatService;
-
+                
+        private TwitchService? _chatService;
+        
+        
         public LinkBroadcaster(SiraLog siraLog, ISongLinkManager songLinkManager, IBeatmapStateManager beatmapStateManager)
         {
             _siraLog = siraLog;
             _songLinkManager = songLinkManager;
             _beatmapStateManager = beatmapStateManager;
-            _chatCoreInstance = CatCoreInstance.Create();
+            _chatCoreInstance = ChatCoreInstance.Create();
+
         }
 
         public void Initialize()
@@ -31,7 +35,7 @@ namespace Link
             _chatService.OnTextMessageReceived += ChatService_OnTextMessageReceived;
         }
 
-        private async void ChatService_OnTextMessageReceived(ITwitchService service, TwitchMessage msg)
+        private async void ChatService_OnTextMessageReceived(IChatService service, IChatMessage msg)
         {
             if (msg.Message.ToLower().StartsWith("!link"))
             {
@@ -47,13 +51,16 @@ namespace Link
                     {
                         _siraLog.Info("The player is not actively playing a map. Let's use the last beatmap they played.");
                         string? link = await _songLinkManager.GetSongLink(_beatmapStateManager.LastBeatmap!);
-                        msg.Channel.SendMessage(Format(msg, link is null ? "Could not find a link for the last played map." : $"The most recently played map was {link}"));
+                        // msg.Channel.SendMessage(Format(msg, link is null ? "Could not find a link for the last played map." : $"The most recently played map was {link}"));
+                        
+                        service.SendTextMessage(Format(msg, link is null ? "Could not find a link for the last played map." : $"The most recently played map was {link}"), msg.Channel);
+                        
                     }
                     else
                     {
                         _siraLog.Info("The player is actively playing a map. Trying to find it's link.");
                         string? link = await _songLinkManager.GetSongLink(_beatmapStateManager.ActiveBeatmap!);
-                        msg.Channel.SendMessage(Format(msg, link is null ? "Could not find a link for the current map." : $"The currently played map is {link}"));
+                        service.SendTextMessage(Format(msg, link is null ? "Could not find a link for the current map." : $"The currently played map is {link}"), msg.Channel);
                     }
                 }
                 catch (Exception e)
@@ -64,7 +71,7 @@ namespace Link
             }
         }
 
-        private string Format(TwitchMessage msg, string message) => $"! {msg.Sender.DisplayName}, {message}";
+        private string Format(IChatMessage msg, string message) => $"! {msg.Sender.DisplayName}, {message}";
         
         public void Dispose()
         {
