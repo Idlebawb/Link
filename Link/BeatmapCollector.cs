@@ -4,10 +4,10 @@ namespace Link
 {
     internal class BeatmapCollector : IInitializable, ILateDisposable
     {
-        private readonly IDifficultyBeatmap _difficultyBeatmap;
+        private readonly BeatmapLevel _difficultyBeatmap;
         private readonly IBeatmapStateManager _beatmapStateManager;
 
-        public BeatmapCollector(IDifficultyBeatmap difficultyBeatmap, IBeatmapStateManager beatmapStateManager)
+        public BeatmapCollector(BeatmapLevel difficultyBeatmap, IBeatmapStateManager beatmapStateManager)
         {
             _difficultyBeatmap = difficultyBeatmap;
             _beatmapStateManager = beatmapStateManager;

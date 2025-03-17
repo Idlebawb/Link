@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <OutputType>Library</OutputType>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
@@ -39,6 +39,9 @@
     <ItemGroup>
 		<Reference Include="ChatCore">
 		  <HintPath>E:\SteamLibrary\steamapps\common\Beat Saber\Libs\ChatCore.dll</HintPath>
+		</Reference>
+		<Reference Include="DataModels">
+		  <HintPath>E:\SteamLibrary\steamapps\common\Beat Saber\Beat Saber_Data\Managed\DataModels.dll</HintPath>
 		</Reference>
 		<Reference Include="IPA.Loader">
 		  <HintPath>E:\SteamLibrary\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
